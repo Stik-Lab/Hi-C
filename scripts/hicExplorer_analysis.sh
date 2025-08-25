@@ -9,21 +9,20 @@
 # ========== VARIABLES ==========
 # put in a file call samples.txt the name of the variables
 
-N=$(wc -l < samples.txt)
 describer=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samples.txt)
 
 source ./config.sh
-for dir in "${restsite_folder}" ${path_hicMatrix} ${path_coolMatrix} ${path_cooltools} ; do
+
+for dir in "${restsite_folder}" ${path_hicMatrix} ${path_coolMatrix} ${path_cooltools} ${path_loops} ; do
   if [ ! -d "${dir}" ]; then
     mkdir -p "${dir}"
   fi
 done
 
 # ========== MODULES ==========
-module load HiCExplorer/3.7.2-foss-2021b
-module load cooler/0.9.1-foss-2021b
-module load krbalancing/0.0.5-foss-2021b
-module load cooltools
+#module load python
+#module load HiCExplorer/3.7.2-foss-2021b
+module load HiCExplorer/3.7.6-foss-2021b
 
 
 # ==========  CREATE REST SITES ==========
@@ -34,7 +33,7 @@ hicFindRestSite --fasta ${refgenome}  --searchPattern GATC -o ${restsite_folder}
 echo "................................................................ END hicFindRestSite ................................................................"
 
 # ==========  BUILD HIC MATRIX ========== 
-echo " ................................................................ start HicBuildMatrix 5kb ${describer} ................................................................"
+echo " ................................................................ HiCExplorer/3.7.6-foss-2021b start HicBuildMatrix 5kb ${describer} ................................................................"
 
 hicBuildMatrix --samFiles ${path_bam}/${describer}_*1.sam ${path_bam}/${describer}_*2.sam \
         --binSize 5000 --restrictionSequence ${restrictionSequence} --danglingSequence ${restrictionSequence} --restrictionCutFile ${restsite_folder}/rest_site_positions.bed \
@@ -100,9 +99,15 @@ echo " ................................................................ END must
 
 done
 
+module purge
+module load cooltools/0.5.2-foss-2021b
+module load cooler
+
+
+
 # ==========  GENERATE SADDLE PLOTS ==========
 echo " ................................................................ START cooltools expected-cis ${describer} ................................................................ "
-cooltools expected-cis -p 8 -o ${path_coolMatrix}/${describer}_100kb_KR_exp.tsv \
+cooltools expected-cis -p 8 -o ${path_cooltools}/${describer}_100kb_KR_exp.tsv \
    ${path_coolMatrix}/${describer}_100kb_KR.cool
 echo " ................................................................ END cooltools expected-cis ${describer} ................................................................ "
 
@@ -120,12 +125,12 @@ awk 'NR>1 {print $1, $2, $3, $6}' ${path_cooltools}/${describer}_100kb_KR_ev_ac.
 awk 'NR>1 {print $1, $2, $3, $7}' ${path_cooltools}/${describer}_100kb_KR_ev_ac.cis.vecs.tsv > ${path_cooltools}/${describer}_100kb_EV3_ac.bedgraph
 echo " ................................................................ END awk ${describer} ................................................................ "
 
-echo " ................................................................ START cooltools sadle ${describer} ................................................................ "
+echo " ................................................................ START cooltools saddle ${describer} ................................................................ "
 
 cooltools saddle --qrange 0.02 0.98 --strength \
     --vmin 0.2 --vmax 4 \
     -o ${path_cooltools}/${describer} --fig pdf \
-   ${path_cooltools}/${describer}_100kb_KR.cool \
+   ${path_coolMatrix}/${describer}_100kb_KR.cool \
     ${path_cooltools}/${describer}_100kb_KR_ev_ac.cis.vecs.tsv \
     ${path_cooltools}/${describer}_100kb_KR_exp.tsv
 
