@@ -8,10 +8,10 @@
 # ========== VARIABLES ==========
 # put in a file call samples.txt the name of the variables
 
-N=$(wc -l < samples.txt)
 describer=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samples.txt)
 
 source ./config.sh
+
 for dir in "${path_bam}" ; do
   if [ ! -d "${dir}" ]; then
     mkdir -p "${dir}"
@@ -49,14 +49,14 @@ echo "................................................................ 3. END_HI
 # ========== ALIGNMENT ==========
 echo "................................................................ 4. START_R1_BOWTIE2 ${describer} ................................................................"
 bowtie2 --local -x ${indexgenome} --threads 8 \
-    -U ${path_fq}/${describer}_R1_val_*.trunc.* --reorder -S ${path_bam}/${describer}_R1.sam
+    -U ${path_fq}/${describer}_*1_val_*.trunc.* --reorder -S ${path_bam}/${describer}_R1.sam
     
 echo "................................................................ 4. END_R1_BOWTIE2 ${describer} ................................................................"
 
 echo "................................................................ 5. START_R2_BOWTIE2 ${describer} ................................................................"
 
 bowtie2 --local -x ${indexgenome} --threads 8 \
-    -U ${path_fq}/${describer}_R2_val_*.trunc.* --reorder -S ${path_bam}/${describer}_R2.sam
+    -U ${path_fq}/${describer}_*2_val_*.trunc.* --reorder -S ${path_bam}/${describer}_R2.sam
 
 echo "................................................................ 5. END_R2_BOWTIE2 ${describer} ................................................................"
 
