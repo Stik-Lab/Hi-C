@@ -4,15 +4,14 @@
 #SBATCH --mem=60gb
 #SBATCH --time=24:00:00
 #SBATCH --cpus-per-task=8
-#SBATCH --output=homer/tag_dir_%A-%a.txt
+#SBATCH --output=tag_dir_%A-%a.txt
 
 # ========== VARIABLES ==========
 # put in a file call samples.txt the name of the variables
 
-N=$(wc -l < samples.txt)
 describer=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samples.txt)
-
 source ./config.sh
+
 for dir in "${path_homer}" ; do
   if [ ! -d "${dir}" ]; then
     mkdir -p "${dir}"
@@ -29,7 +28,7 @@ module load Java/17.0.2
 echo " ................................................................ START makeTagDirectory 1 ${describer} ................................................................"
 
 makeTagDirectory ${path_homer}/${describer}_unfiltered \
-                 ${path_bam}/${describer}_*1.sam,${path_bam}/${describer}_*2.sam \
+                 ${path_bam}/${describer}_R1.sam,${path_bam}/${describer}_R2.sam \
                  -tbp 1 -illuminaPE
 
 echo " ................................................................ END makeTagDirectory 1 ${describer} ................................................................"
