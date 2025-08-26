@@ -1,5 +1,5 @@
 #!/bin/sh
-#SBATCH --job-name=fastqc
+#SBATCH --job-name=HICpipeline
 #SBATCH --mem=100gb
 #SBATCH --time=72:00:00
 #SBATCH --cpus-per-task=8
