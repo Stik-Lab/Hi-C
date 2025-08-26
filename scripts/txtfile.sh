@@ -10,9 +10,7 @@
 # ========== VARIABLES ==========
 # put in a file call samples.txt the name of the variables
 
-N=$(wc -l < samples.txt)
 describer=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samples.txt)
-
 source ./config.sh
 
 # ========== MODULES ==========
