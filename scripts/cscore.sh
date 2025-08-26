@@ -9,8 +9,9 @@
 # put in a file call samples.txt the name of the variables
 
 describer=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samples.txt)
-
+array_id=${SLURM_ARRAY_TASK_ID}
 source ./config.sh
+
 for dir in "${path_cscore}" ; do
   if [ ! -d "${dir}" ]; then
     mkdir -p "${dir}"
@@ -20,11 +21,10 @@ done
 # ========== MODULES ==========
 module load cscoretool/1.1
 
-
 echo " ................................................................ START cscore ${describer} ................................................................ "
 
 CscoreTool1.1 ${genome100kb} \
-    homertxt_%a.txt \
+    homertxt_${array_id}.txt \
     ${path_cscore}/${describer} \
     4 1000000
 
