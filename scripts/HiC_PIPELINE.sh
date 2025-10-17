@@ -63,5 +63,5 @@ echo "................................................................ 5. END_R2
 
 # ==========  LAUNCH ANALYSIS SCRIPTS ==========
 sbatch -array=1-$N scripts/tagdir.sh 
-sbatch -array=1-$N scripts/hicexplorer.sh 
+sbatch -array=1-$N scripts/hicExplorer_analysis.sh 
 
