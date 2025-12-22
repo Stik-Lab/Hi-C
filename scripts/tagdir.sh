@@ -53,5 +53,13 @@ tagDir2hicFile.pl ${path_homer}/${describer}_filtered  -juicer auto -genome ${ge
 
 echo "................................................................ END hic file ${describer} ................................................................"
 
-sbatch -array=1-$N scripts/txtfile.sh
+echo "job successful"
+
+if [ "$(grep 'job successful' homer/tag_dir_*.txt | wc -l)" -eq "${N}" ]; then
+    sbatch -array=1-$N scripts/txtfile.sh
+else
+    echo "Number of completed jobs: $(grep 'job successful' homer/tag_dir_*.txt | wc -l)"
+fi
+
+
 
