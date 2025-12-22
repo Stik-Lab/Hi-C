@@ -61,7 +61,18 @@ bowtie2 --local -x ${indexgenome} --threads 8 \
 echo "................................................................ 5. END_R2_BOWTIE2 ${describer} ................................................................"
 
 
-# ==========  LAUNCH ANALYSIS SCRIPTS ==========
-sbatch -array=1-$N scripts/tagdir.sh 
-sbatch -array=1-$N scripts/hicExplorer_analysis.sh 
+if [ "$(samtools quickcheck "${describer}_R1.sam" | wc -l)" -eq 0 ] &&
+   [ "$(samtools quickcheck "${describer}_R2.sam" | wc -l)" -eq 0 ]; then
+    echo "job successful"
+else
+    echo "job FAIL"
+fi
 
+# ==========  LAUNCH ANALYSIS SCRIPTS ==========
+
+if [ "$(grep 'job successful' HICpipeline_*.txt | wc -l)" -eq "${N}" ]; then
+    sbatch -array=1-${N} scripts/tagdir.sh
+    sbatch -array=1-${N} scripts/hicexplorer.sh
+else
+    echo "Number of completed jobs: $(grep 'job successful' HICpipeline_*.txt | wc -l)"
+fi
