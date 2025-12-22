@@ -24,4 +24,10 @@ tagDir2hicFile.pl ${path_homer}/${describer}_filtered -genome ${genome} -juicerE
 
 echo " ................................................................ END .txt file ${describer} ................................................................ "
 
-sbatch -array=1-$N scripts/cscore.sh
+echo "job successful"
+
+if [ "$(grep 'END .txt file' homertxt_*.txt | wc -l)" -eq "${N}" ]; then
+    sbatch -array=1-$N scripts/cscore.sh
+else
+    echo "Number of completed jobs: $(grep 'job successful' homertxt_*.txt | wc -l)"
+fi
