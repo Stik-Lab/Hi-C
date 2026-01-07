@@ -35,7 +35,7 @@ echo "................................................................ END hicFi
 # ==========  BUILD HIC MATRIX ========== 
 echo " ................................................................ HiCExplorer/3.7.6-foss-2021b start HicBuildMatrix 5kb ${describer} ................................................................"
 
-hicBuildMatrix --samFiles ${path_bam}/${describer}_*1.sam ${path_bam}/${describer}_*2.sam \
+hicBuildMatrix --samFiles ${path_bam}/${describer}_R1.sam ${path_bam}/${describer}_R2.sam \
         --binSize 5000 --restrictionSequence ${restrictionSequence} --danglingSequence ${restrictionSequence} --restrictionCutFile ${restsite_folder}/rest_site_positions.bed \
         --outFileName ${path_hicMatrix}/${describer}_5kb.h5 --QCfolder ${path_hicMatrix}/${describer}_5kb_QC --threads 8 --inputBufferSize 400000
 
