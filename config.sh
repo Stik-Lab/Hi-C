@@ -20,4 +20,5 @@ genome100kb='/mnt/beegfs/eferre/bin/files/hg38/hg38_100kb.bed'
 N=$(wc -l < samples.txt)
 restriction_enzyme='^GATC,MboI'
 restrictionSequence='GATC'
+danglingSequence='GATC'
 genome='hg38'
