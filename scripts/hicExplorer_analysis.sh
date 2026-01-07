@@ -28,7 +28,7 @@ module load HiCExplorer/3.7.6-foss-2021b
 # ==========  CREATE REST SITES ==========
 echo "................................................................ start hicFindRestSite ${describer} ................................................................"
 
-hicFindRestSite --fasta ${refgenome}  --searchPattern GATC -o ${restsite_folder}/rest_site_positions.bed
+hicFindRestSite --fasta ${refgenome}  --searchPattern ${restrictionSequence} -o ${restsite_folder}/rest_site_positions.bed
 
 echo "................................................................ END hicFindRestSite ................................................................"
 
@@ -36,7 +36,7 @@ echo "................................................................ END hicFi
 echo " ................................................................ HiCExplorer/3.7.6-foss-2021b start HicBuildMatrix 5kb ${describer} ................................................................"
 
 hicBuildMatrix --samFiles ${path_bam}/${describer}_R1.sam ${path_bam}/${describer}_R2.sam \
-        --binSize 5000 --restrictionSequence ${restrictionSequence} --danglingSequence ${restrictionSequence} --restrictionCutFile ${restsite_folder}/rest_site_positions.bed \
+        --binSize 5000 --restrictionSequence ${restrictionSequence} --danglingSequence ${danglingSequence} --restrictionCutFile ${restsite_folder}/rest_site_positions.bed \
         --outFileName ${path_hicMatrix}/${describer}_5kb.h5 --QCfolder ${path_hicMatrix}/${describer}_5kb_QC --threads 8 --inputBufferSize 400000
 
 echo "................................................................ end HicBuildMatrix 5kb ${describer} ................................................................"
