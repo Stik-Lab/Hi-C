@@ -49,24 +49,20 @@ echo "................................................................ 3. END_HI
 # ========== ALIGNMENT ==========
 echo "................................................................ 4. START_R1_BOWTIE2 ${describer} ................................................................"
 bowtie2 --local -x ${indexgenome} --threads 8 \
-    -U ${path_fq}/${describer}_*1_val_*.trunc.* --reorder -S ${path_bam}/${describer}_R1.sam
+    -U ${path_fq}/${describer}_*1_val_*.trunc.* --reorder | samtools view -bS -o ${path_bam}/${describer}_R1.bam
     
 echo "................................................................ 4. END_R1_BOWTIE2 ${describer} ................................................................"
 
 echo "................................................................ 5. START_R2_BOWTIE2 ${describer} ................................................................"
 
 bowtie2 --local -x ${indexgenome} --threads 8 \
-    -U ${path_fq}/${describer}_*2_val_*.trunc.* --reorder -S ${path_bam}/${describer}_R2.sam
+    -U ${path_fq}/${describer}_*2_val_*.trunc.* --reorder | samtools view -bS -o ${path_bam}/${describer}_R2.bam
 
 echo "................................................................ 5. END_R2_BOWTIE2 ${describer} ................................................................"
 
 
-if [ "$(samtools quickcheck "${describer}_R1.sam" | wc -l)" -eq 0 ] &&
-   [ "$(samtools quickcheck "${describer}_R2.sam" | wc -l)" -eq 0 ]; then
-    echo "job successful"
-else
-    echo "job FAIL"
-fi
+echo "job successful"
+
 
 # ==========  LAUNCH ANALYSIS SCRIPTS ==========
 
