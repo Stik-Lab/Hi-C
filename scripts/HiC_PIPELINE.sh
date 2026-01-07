@@ -68,7 +68,7 @@ echo "job successful"
 
 if [ "$(grep 'job successful' HICpipeline_*.txt | wc -l)" -eq "${N}" ]; then
     sbatch -array=1-${N} scripts/tagdir.sh
-    sbatch -array=1-${N} scripts/hicexplorer.sh
+    sbatch -array=1-${N} scripts/hicExplorer_analysis.sh
 else
     echo "Number of completed jobs: $(grep 'job successful' HICpipeline_*.txt | wc -l)"
 fi
