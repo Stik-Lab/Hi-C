@@ -60,6 +60,9 @@ bowtie2 --local -x ${indexgenome} --threads 8 \
 
 echo "................................................................ 5. END_R2_BOWTIE2 ${describer} ................................................................"
 
+if [ "${mergerep}" = "yes" ]; then
+  sbatch --array=1-"${Nmerge}" scripts/merge.sh
+fi
 
 echo "job successful"
 
