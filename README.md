@@ -38,22 +38,75 @@ This repository contains a complete Hi-C data processing pipeline for generating
 
    
 ## Before starting
-### 1. Prepare the samples.txt file
-This file should contain one sample name per line, matching your FASTQ filenames (without extensions). Example:
+### 1. Prepare the sample files
+
+You need two input files when working with replicates:
+
+##### samples.txt
+
+Contains one line per replicate. The names must match the FASTQ filenames (without extensions).
+
+Example:
+```bash
+Sample1_1
+Sample1_2
+Sample2_1
+Sample2_2
+Sample3_1
+Sample3_2
+```
+
+##### samplesmerge.txt
+
+Contains one line per biological sample without replicate suffixes. This file is used for merge steps.
+
+Example:
 ```bash
 sample1
 sample2
 sample3
 ```
+Make sure both files are consistent with your naming convention and with the variables defined in ```config.sh```.
 
-### 2. Edit the config.sh file
-Update all paths and parameters according to your environment.
+### 2. Edit the ```config.sh``` file
+Update the paths and parameters according to your environment.
+
+#### Folder paths 
 
 ```bash
 # Example: edit the folder paths
 path_fq='path_to_fastq'
 path_bam='path_to_bamfiles'
 ```
+
+#### Reference files and programs
+
+```bash
+
+HICUP_trunc='../bin/hiCUP/HiCUP-0.9.2/hicup_truncater'  # Script used to truncate Hi-C reads at restriction sites. (required)
+indexgenome='...'                                     # Bowtie2 genome index (required)
+refgenome='...'                                       # Reference genome FASTA file
+ref_compartments='...'                                # BED file with reference A/B compartments.
+genome100kb='...'                                     # Genome bins at 100 kb resolution (BED)
+
+```
+
+#### Parameters
+
+```bash
+
+N=$(wc -l < samples.txt)        # Number of replicate entries (one line per replicate)
+Nmerge=$(wc -l < samplesmerge.txt) # Number of biological samples (used for merging)
+
+restriction_enzyme='^GATC,MboI' # Restriction enzyme used in Hi-C (HiCUP format)
+restrictionSequence='GATC'     # Restriction site sequence
+danglingSequence='GATC'        # Dangling end sequence
+genome='hg38'                  # Genome assembly
+merge='yes/no'                 # Enable or disable replicate merging
+numRep=2                       # Number of replicates per biological sample
+
+```
+
 ### 3. Load Required modules
 ++
 
