@@ -107,8 +107,11 @@ numRep=2                       # Number of replicates per biological sample
 
 ```
 
-### 3. Load Required modules
-++
+### 3. HPC environment
+
+This pipeline is designed to run on an HPC cluster using a job scheduler.
+Each script loads the required software modules internally.
+Before running the pipeline, make sure that all required programs and module names are available in your cluster environment, or adapt the module loading commands to match your local module system.
 
 ## How to run the pipeline
 
