@@ -56,7 +56,7 @@ echo "................................................................ END hic f
 echo "job successful"
 
 if [ "$(grep 'job successful' homer/tag_dir_*.txt | wc -l)" -eq "${N}" ]; then
-    sbatch -array=1-$N scripts/txtfile.sh
+    sbatch --array=1-$N scripts/txtfile.sh
 else
     echo "Number of completed jobs: $(grep 'job successful' homer/tag_dir_*.txt | wc -l)"
 fi
