@@ -76,9 +76,9 @@ echo "merged successful"
 
 # ==========  LAUNCH ANALYSIS SCRIPTS ==========
 
-if [ "$(grep 'merged successful' merge_*.txt | wc -l)" -eq "${N_merge}" ]; then
+if [ "$(grep 'merged successful' merge_*.log | wc -l)" -eq "${Nmerge}" ]; then
     sbatch -array=1-${Nmerge} scripts/tagdir_merge.sh
     sbatch -array=1-${Nmerge} scripts/hicExplorer_analysis_merge.sh
 else
-    echo "Number of completed jobs: $(grep 'job successful' merge_*.txt | wc -l)"
+    echo "Number of completed jobs: $(grep 'merged successful' merge_*.log | wc -l)"
 fi
