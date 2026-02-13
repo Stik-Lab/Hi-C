@@ -24,6 +24,7 @@ module load Trim_Galore/0.6.6-foss-2021b-Python-3.8.5
 module load Perl/5.34.0-GCCcore-11.2.0
 module load  R/4.2.1-foss-2021b
 module load Bowtie2/2.4.4.1-GCC-11.2.0
+module load samtools-1.12-gcc-11.2.0-n7fo7p2
 
 # ========== FASTQC ==========
 echo "................................................................ 1. START_FASTQC ${describer} ................................................................"
