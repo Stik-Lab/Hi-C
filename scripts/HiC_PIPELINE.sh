@@ -60,18 +60,18 @@ bowtie2 --local -x ${indexgenome} --threads 8 \
 
 echo "................................................................ 5. END_R2_BOWTIE2 ${describer} ................................................................"
 
-if [ "${mergerep}" = "yes" ]; then
+if [ "$(grep 'job successful' HICpipeline_*.txt | wc -l)" -eq "${N}" ] && [ "${merge}" ="yes" ]; then
   sbatch --array=1-"${Nmerge}" scripts/merge.sh
 fi
 
-echo "job successful"
+echo "${merge}"
 
 
 # ==========  LAUNCH ANALYSIS SCRIPTS ==========
 
 if [ "$(grep 'job successful' HICpipeline_*.txt | wc -l)" -eq "${N}" ]; then
-    sbatch -array=1-${N} scripts/tagdir.sh
-    sbatch -array=1-${N} scripts/hicExplorer_analysis.sh
+    sbatch --array=2-2 scripts/tagdir.sh
+    sbatch --array=2-2 scripts/hicExplorer_analysis.sh
 else
     echo "Number of completed jobs: $(grep 'job successful' HICpipeline_*.txt | wc -l)"
 fi
