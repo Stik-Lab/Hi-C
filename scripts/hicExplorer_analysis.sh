@@ -20,9 +20,11 @@ for dir in "${restsite_folder}" ${path_hicMatrix} ${path_coolMatrix} ${path_cool
 done
 
 # ========== MODULES ==========
-#module load python
-#module load HiCExplorer/3.7.2-foss-2021b
 module load HiCExplorer/3.7.6-foss-2021b
+module load cooler/0.9.1-foss-2021b
+module load krbalancing/0.0.5-foss-2021b
+module load Miniconda3/4.9
+source activate mustache
 
 
 # ==========  CREATE REST SITES ==========
