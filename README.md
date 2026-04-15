@@ -118,7 +118,7 @@ Before running the pipeline, make sure that all required programs and module nam
 Only the first script needs to be run manually.
 
 ```bash
-sbatch --array=1-N scripts/HIC_PIPELINE.sh
+sbatch --array=1-N scripts/HIC_PiPELINE.sh
 ```
 > [!IMPORTANT]
 > Replace N with the number of samples in samples.txt
