@@ -29,3 +29,10 @@ CscoreTool1.1 ${genome100kb} \
     4 1000000
 
 echo " ................................................................ END cscore ${describer} ................................................................ "
+
+for i in "${path_cscore}/${describer}"_cscore.bedgraph
+do
+outfile=$(basename "$i" _cscore.bedgraph)
+sed 1d "$i" | awk -v OFS='\t' '$1 != "chrY" {print $1, $2+1, $3, $4}' > "${path_cscore}/${outfile}_tp.bedgraph"
+done
+
