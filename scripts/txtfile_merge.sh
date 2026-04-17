@@ -29,5 +29,5 @@ echo "job successful"
 if [ "$(grep 'END .txt merge file' homertxt_*_merge.txt | wc -l)" -eq "${Nmerge}" ]; then
     sbatch -array=1-$Nmerge scripts/cscore_merge.sh
 else
-    echo "Number of completed jobs: $(grep 'job successful' homertxt_*merge.txt | wc -l)"
+    echo "Number of completed jobs: $(grep 'job successful' homertxt_*_merge.txt | wc -l)"
 fi
