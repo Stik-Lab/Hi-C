@@ -1,15 +1,15 @@
 #!/bin/bash
 
-#SBATCH --job-name=homer_merge
+#SBATCH --job-name=homer
 #SBATCH --mem=60gb
 #SBATCH --time=24:00:00
 #SBATCH --cpus-per-task=8
-#SBATCH --output=tag_dir_merge_%A-%a.txt
+#SBATCH --output=tag_dir_merge_%A-%a.log
 
 # ========== VARIABLES ==========
 # put in a file call samples.txt the name of the variables
 
-describer=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samplesmerge.txt)
+describer=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samples.txt)
 source ./config.sh
 
 for dir in "${path_homer}" ; do
@@ -27,15 +27,38 @@ module load Java/17.0.2
 
 echo " ................................................................ START makeTagDirectory 1 ${describer} ................................................................"
 
-makeTagDirectory ${path_homer}/${describer}_unfiltered \
+if [ ! -s "${path_bam}/${describer}_R1.bam" & "${path_bam}/${describer}_R2.bam" ]; then
+    echo "ERROR: BAM files missing for ${describer}. Cannot call TagDirectory. Aborting."
+    exit 1
+fi
+
+if [ -s "${path_homer}/${describer}_unfiltered" ]; then
+    echo "SKIP  makeTagDirectory 1 : Output already exists for ${describer}"
+else
+    makeTagDirectory ${path_homer}/${describer}_unfiltered \
                  ${path_bam}/${describer}_R1.bam,${path_bam}/${describer}_R2.bam \
                  -tbp 1 -illuminaPE
+fi
 
 echo " ................................................................ END makeTagDirectory 1 ${describer} ................................................................"
 
+
+
 echo " ................................................................ START cp ${describer} ................................................................ "
-cp -r ${path_homer}/${describer}_unfiltered ${path_homer}/${describer}_filtered
+
+if [ ! -s "${path_homer}/${describer}_unfiltered" ]; then
+    echo "ERROR: Files missing for ${describer}. Cannot cp folder. Aborting."
+    exit 1
+fi
+
+if [ -s "${path_homer}/${describer}_filtered" ]; then
+    echo "SKIP  cp : Output already exists for ${describer}"
+else
+   cp -r ${path_homer}/${describer}_unfiltered ${path_homer}/${describer}_filtered
+fi
+
 echo " ................................................................ END cp ${describer} ................................................................"
+
 
 echo " ................................................................ START makeTagDirectory 2 ${describer} ................................................................ "
 
@@ -46,20 +69,21 @@ makeTagDirectory ${path_homer}/${describer}_filtered -update \
 
 echo " ................................................................ END makeTagDirectory 2 ${describer} ................................................................ "
 
-
 echo "................................................................ START hic file ${describer} ................................................................"
 
 tagDir2hicFile.pl ${path_homer}/${describer}_filtered  -juicer auto -genome ${genome} -juicerExe "java -jar juicer_tools.1.9.9_jcuda.0.8.jar" -p 8
 
 echo "................................................................ END hic file ${describer} ................................................................"
 
-echo "job merged successful"
-
-if [ "$(grep 'job merged successful' homer/tag_dir_merge_*.txt | wc -l)" -eq "${Nmerge}" ]; then
-    sbatch -array=1-$Nmerge scripts/txtfile_merge.sh
+if [ -s "${path_homer}/${describer}_filtered/tagInfo.txt" ]; then
+    echo "job successful"
 else
-    echo "Number of completed jobs: $(grep 'job successful' homer/tag_dir_merge_*.txt | wc -l)"
+    echo "fail"
 fi
 
-
+if [ "$(grep 'job successful' tag_dir_merge_${SLURM_ARRAY_JOB_ID}-*.log 2>/dev/null | wc -l)" -eq "${Nmerge}" ]; then
+    sbatch --array=1-${Nmerge} scripts/txtfile_merge.sh
+else
+    echo "Number of completed jobs: $(grep 'job successful' tag_dir_merge_${SLURM_ARRAY_JOB_ID}-*.log | wc -l)"
+fi
 
