@@ -24,10 +24,16 @@ tagDir2hicFile.pl ${path_homer}/${describer}_filtered -genome ${genome} -juicerE
 
 echo " ................................................................ END .txt file ${describer} ................................................................ "
 
-echo "job successful"
 
-if [ "$(grep 'END .txt file' homertxt_*.txt | wc -l)" -eq "${N}" ]; then
-    sbatch -array=1-$N scripts/cscore.sh
+array_id=${SLURM_ARRAY_TASK_ID}
+
+if grep -q "END .txt file" "homertxt_${array_id}.txt"; then
+    echo "job successful"
+    sbatch --array=${array_id}-"${array_id}" scripts/cscore.sh
+    COUNT=$(grep -c "job successful" homertxt_*.txt)
+    echo "Number of completed jobs: $COUNT"
 else
-    echo "Number of completed jobs: $(grep 'job successful' homertxt_*.txt | wc -l)"
+    echo "fail"
+    COUNT=$(grep -c "job successful" homertxt_*.txt)
+    echo "Number of completed jobs: $COUNT"
 fi
