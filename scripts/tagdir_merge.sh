@@ -9,7 +9,7 @@
 # ========== VARIABLES ==========
 # put in a file call samples.txt the name of the variables
 
-describer=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samples.txt)
+describer=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samplesmerge.txt)
 source ./config.sh
 
 for dir in "${path_homer}" ; do
@@ -20,6 +20,7 @@ done
 
 # ========== MODULES ==========
 
+module load samtools-1.12-gcc-11.2.0-n7fo7p2
 module load homer/0.1
 module load Java/17.0.2
 
@@ -27,12 +28,12 @@ module load Java/17.0.2
 
 echo " ................................................................ START makeTagDirectory 1 ${describer} ................................................................"
 
-if [ ! -s "${path_bam}/${describer}_R1.bam" & "${path_bam}/${describer}_R2.bam" ]; then
+if [ ! -f "${path_bam}/${describer}_R1.bam" ] || [ ! -f "${path_bam}/${describer}_R2.bam" ]; then
     echo "ERROR: BAM files missing for ${describer}. Cannot call TagDirectory. Aborting."
     exit 1
 fi
 
-if [ -s "${path_homer}/${describer}_unfiltered" ]; then
+if [ -d "${path_homer}/${describer}_unfiltered" ]; then
     echo "SKIP  makeTagDirectory 1 : Output already exists for ${describer}"
 else
     makeTagDirectory ${path_homer}/${describer}_unfiltered \
@@ -46,12 +47,12 @@ echo " ................................................................ END make
 
 echo " ................................................................ START cp ${describer} ................................................................ "
 
-if [ ! -s "${path_homer}/${describer}_unfiltered" ]; then
+if [ ! -d "${path_homer}/${describer}_unfiltered" ]; then
     echo "ERROR: Files missing for ${describer}. Cannot cp folder. Aborting."
     exit 1
 fi
 
-if [ -s "${path_homer}/${describer}_filtered" ]; then
+if [ -d "${path_homer}/${describer}_filtered" ]; then
     echo "SKIP  cp : Output already exists for ${describer}"
 else
    cp -r ${path_homer}/${describer}_unfiltered ${path_homer}/${describer}_filtered
@@ -62,28 +63,38 @@ echo " ................................................................ END cp $
 
 echo " ................................................................ START makeTagDirectory 2 ${describer} ................................................................ "
 
-makeTagDirectory ${path_homer}/${describer}_filtered -update \
+if [ -f "${path_homer}/${describer}_filtered/tagInfo.txt" ] && [ "$(find "${path_homer}/${describer}_filtered" -name "*.bed" | wc -l)" -gt 0 ]; then
+    echo "SKIP makeTagDirectory 2 : Already updated and processed for ${describer}"
+else
+
+        makeTagDirectory ${path_homer}/${describer}_filtered -update \
                 -genome ${genome} -removePEbg \
                 -restrictionSite ${restrictionSequence} -both \
                 -removeSelfLigation -removeSpikes 10000 5
 
+fi
 echo " ................................................................ END makeTagDirectory 2 ${describer} ................................................................ "
 
 echo "................................................................ START hic file ${describer} ................................................................"
 
-tagDir2hicFile.pl ${path_homer}/${describer}_filtered  -juicer auto -genome ${genome} -juicerExe "java -jar juicer_tools.1.9.9_jcuda.0.8.jar" -p 8
+if [ -s "${path_homer}/${describer}_filtered/${describer}_filtered.hic" ]; then
+    echo "SKIP hic file : .hic file already exists for ${describer}"
+else
+
+        tagDir2hicFile.pl ${path_homer}/${describer}_filtered  -juicer auto -genome ${genome} -juicerExe "java -jar juicer_tools.1.9.9_jcuda.0.8.jar" -p 8
+
+fi
 
 echo "................................................................ END hic file ${describer} ................................................................"
 
+
+array_id=${SLURM_ARRAY_TASK_ID}
+
 if [ -s "${path_homer}/${describer}_filtered/tagInfo.txt" ]; then
     echo "job successful"
+    sbatch --array=${array_id}-${array_id} scripts/txtfile_merge.sh
+    echo "Number of completed jobs: $(grep 'job successful' tag_dir_merge_${SLURM_ARRAY_JOB_ID}-*.log | wc -l)"
 else
     echo "fail"
-fi
-
-if [ "$(grep 'job successful' tag_dir_merge_${SLURM_ARRAY_JOB_ID}-*.log 2>/dev/null | wc -l)" -eq "${Nmerge}" ]; then
-    sbatch --array=1-${Nmerge} scripts/txtfile_merge.sh
-else
     echo "Number of completed jobs: $(grep 'job successful' tag_dir_merge_${SLURM_ARRAY_JOB_ID}-*.log | wc -l)"
 fi
-
