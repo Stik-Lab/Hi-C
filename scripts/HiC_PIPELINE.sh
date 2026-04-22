@@ -102,21 +102,27 @@ fi
 
 echo "................................................................ 5. END_R2_BOWTIE2 ${describer} ................................................................"
 
+
+array_id=${SLURM_ARRAY_TASK_ID}
+
 # ========== 6. FINAL VALIDATION ==========
 if [ -s "${path_bam}/${describer}_R1.bam" ] && [ -s "${path_bam}/${describer}_R2.bam" ]; then
     echo "job successful"
+    sbatch --array=${array_id}-${array_id} scripts/tagdir.sh
+    sbatch --array=${array_id}-${array_id} scripts/hicExplorer_analysis.sh
+
+
 else
     echo "job failed: BAM files are missing or empty for ${describer}"
     exit 1
 fi
 
 # ========== 7. LAUNCH DOWNSTREAM ANALYSIS ==========
-COMPLETED=$(grep -l "job successful" HICpipeline_${SLURM_ARRAY_JOB_ID}-*.log 2>/dev/null | wc -l)
+
+COMPLETED=$(grep "job successful" HICpipeline_${SLURM_ARRAY_JOB_ID}-*.log | wc -l)
 
 if [ "$COMPLETED" -eq "$N" ]; then
     echo "All jobs finished successfully. Launching downstream analysis..."
-    sbatch --array=1-${N} scripts/tagdir.sh
-    sbatch --array=1-${N} scripts/hicExplorer_analysis.sh
 
     if [ "${merge}" == "yes" ]; then
         sbatch --array=1-${Nmerge} scripts/merge.sh
