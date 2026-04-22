@@ -1,9 +1,9 @@
 #!/bin/sh
-#SBATCH --job-name=hicMatrix_merge
+#SBATCH --job-name=merge
 #SBATCH --mem=150gb
 #SBATCH --time=30:00:00
 #SBATCH --cpus-per-task=8
-#SBATCH --output=hicMatrixmerge_%A-%a.log
+#SBATCH --output=merge_%A-%a.log
 
 # ========== VARIABLES ==========
 describer=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samplesmerge.txt)
@@ -122,7 +122,7 @@ fi
 echo "merged successful"
 
 # ========== LAUNCH ANALYSIS SCRIPTS ==========
-COMPLETED=$(grep -l "merged successful" hicMatrixmerge_${SLURM_ARRAY_JOB_ID}-*.log 2>/dev/null | wc -l)
+COMPLETED=$(grep -l "merged successful" merge_${SLURM_ARRAY_JOB_ID}-*.log 2>/dev/null | wc -l)
 
 if [ "$COMPLETED" -eq "$Nmerge" ]; then
     echo "All ${Nmerge} merge jobs finished. Launching downstream analysis..."
