@@ -1,19 +1,19 @@
 #!/bin/sh
-#SBATCH --job-name=hicMatrix
+#SBATCH --job-name=hicMatrix_merge
 #SBATCH --mem=150gb
 #SBATCH --time=30:00:00
 #SBATCH --cpus-per-task=8
-#SBATCH --output=hicMatrix_%A-%a.log
+#SBATCH --output=hicMatrix_merge_%A-%a.log
 
 
 # ========== VARIABLES ==========
 # put in a file call samples.txt the name of the variables
 
-describer=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samples.txt)
+describer=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samplesmerge.txt)
 
 source ./config.sh
 
-for dir in "${restsite_folder}" ${path_hicMatrix} ${path_coolMatrix} ${path_cooltools} ${path_loops} ; do
+for dir in "${restsite_folder}" ${path_hicMatrix} ${path_coolMatrix} ${path_cooltools} ${path_loops} ${path_TADs} ; do
   if [ ! -d "${dir}" ]; then
     mkdir -p "${dir}"
   fi
@@ -28,37 +28,6 @@ module load Miniconda3/4.9
 source activate mustache
 
 
-# ==========  CREATE REST SITES ==========
-echo "................................................................ start hicFindRestSite ${describer} ................................................................"
-
-hicFindRestSite --fasta ${refgenome}  --searchPattern ${restrictionSequence} -o ${restsite_folder}/rest_site_positions.bed
-
-echo "................................................................ END hicFindRestSite ................................................................"
-
-# ========== BUILD HIC MATRIX ==========
-echo "................................................................ START hicBuildMatrix 5kb ${describer} ................................................................"
-
-if [ ! -s "${path_bam}/${describer}_R1.bam" ] || [ ! -s "${path_bam}/${describer}_R2.bam" ]; then
-    echo "ERROR: BAM files missing for ${describer}. Aborting."
-    exit 1
-fi
-
-if [ ! -s "${restsite_folder}/rest_site_positions.bed" ]; then
-    echo "ERROR: rest site file missing. Aborting."
-    exit 1
-fi
-
-if [ -s "${path_hicMatrix}/${describer}_5kb.h5" ]; then
-    echo "SKIP hicBuildMatrix: 5kb matrix already exists for ${describer}"
-else
-    hicBuildMatrix --samFiles ${path_bam}/${describer}_R1.bam ${path_bam}/${describer}_R2.bam \
-        --binSize 5000 --restrictionSequence ${restrictionSequence} --danglingSequence ${danglingSequence} \
-        --restrictionCutFile ${restsite_folder}/rest_site_positions.bed \
-        --outFileName ${path_hicMatrix}/${describer}_5kb.h5 \
-        --QCfolder ${path_hicMatrix}/${describer}_5kb_QC --threads 8 --inputBufferSize 400000
-fi
-
-echo "................................................................ END hicBuildMatrix 5kb ${describer} ................................................................"
 
 
 # ========== GENERATE DIFFERENT RESOLUTION MATRICES ==========
