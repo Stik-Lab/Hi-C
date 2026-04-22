@@ -1,14 +1,14 @@
 #!/bin/sh
-#SBATCH --job-name=cscore
+#SBATCH --job-name=cscore_merge
 #SBATCH --mem=50gb
 #SBATCH --time=04:00:00
 #SBATCH --cpus-per-task=4
-#SBATCH --output=cscore_%A-%a.log
+#SBATCH --output=cscore_merge_%A-%a.log
 
 # ========== VARIABLES ==========
 # put in a file call samples.txt the name of the variables
 
-describer=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samples.txt)
+describer=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samplesmerge.txt)
 array_id=${SLURM_ARRAY_TASK_ID}
 source ./config.sh
 
