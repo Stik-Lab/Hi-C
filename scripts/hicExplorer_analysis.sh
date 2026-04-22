@@ -13,7 +13,7 @@ describer=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samples.txt)
 
 source ./config.sh
 
-for dir in "${restsite_folder}" ${path_hicMatrix} ${path_coolMatrix} ${path_cooltools} ${path_loops} ; do
+for dir in "${restsite_folder}" ${path_hicMatrix} ${path_coolMatrix} ${path_cooltools} ${path_loops} ${path_TADs} ; do
   if [ ! -d "${dir}" ]; then
     mkdir -p "${dir}"
   fi
