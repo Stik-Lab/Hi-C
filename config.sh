@@ -16,9 +16,12 @@ refgenome='/mnt/beegfs/public/references/genome/human/GRCh38.primary_assembly.ge
 ref_compartments='ref/refcool_MRC5_ATAC_100kb.bed'  # requirements
 genome100kb='/mnt/beegfs/eferre/bin/files/hg38/hg38_100kb.bed'
 
-# Parameters 
+# Parameters
 N=$(wc -l < samples.txt)
+Nmerge=$(wc -l < samplesmerge.txt)
 restriction_enzyme='^GATC,MboI'
 restrictionSequence='GATC'
 danglingSequence='GATC'
 genome='hg38'
+merge='yes'                 # Enable or disable replicate merging
+numRep=2
