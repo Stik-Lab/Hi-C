@@ -253,7 +253,7 @@ CscoreTool1.1 ${genome100kb} \
 - ```4``` → Number of processing threads
 - ```1000000``` → Window size (1 Mb) for calculating correlation patterns
 
-Output Files:
+
 
 ### 5. Hi-C matrix generation and analysis (hicexplorer.sh)
 - Finds restriction sites in the reference genome.
