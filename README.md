@@ -263,4 +263,26 @@ Output Files:
 - Calls loops at multiple resolutions with mustache.
 - Computes expected contacts, eigenvectors, and compartment scores with cooltools.
 - Generates saddle plots.
-Output Files
+- Call TADs at 20kb resolution.
+  
+## Outputs
+
+Once you run the pipeline, the following files and folders are generated:
+
+| Directory | Primary File Types | Description |
+| :--- | :--- | :--- |
+| `TADs/` | `.bed`, `.gff`, `.bedgraph` | Topologically Associating Domain boundaries and scores. |
+| `bamfiles/` | `.bam` | Cleaned read alignments. |
+| `coolMatrix/` | `.cool` | Contact matrices optimized for HiGlass/Juicebox. |
+| `cooltools/` | `.pdf`, `.npz`, `.tsv` | A/B compartment eigenvectors and saddle plot metrics. |
+| `cscore/` | `.bedgraph`, `.txt` | Quantified genomic compartment status. |
+| `hicMatrix/` | `.h5`, `.html` | Processed interaction matrices and QC summaries. |
+| `homer/` | `.tags.tsv` | Tag directories for HOMER compatibility. |
+| `loops/` | `.bedpe` | Detected chromatin loop interactions. |
+
+
+
+
+
+
+
