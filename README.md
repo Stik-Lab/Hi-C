@@ -83,7 +83,7 @@ path_bam='path_to_bamfiles'
 
 ```bash
 
-HICUP_trunc='../bin/hiCUP/HiCUP-0.9.2/hicup_truncater'  # Script used to truncate Hi-C reads at restriction sites. (required)
+HICUP_trunc='hiCUP/HiCUP-0.9.2/hicup_truncater'  # Script used to truncate Hi-C reads at restriction sites. (required)
 indexgenome='...'                                     # Bowtie2 genome index (required)
 refgenome='...'                                       # Reference genome FASTA file
 ref_compartments='...'                                # BED file with reference A/B compartments.
@@ -112,6 +112,21 @@ numRep=2                       # Number of replicates per biological sample
 This pipeline is designed to run on an HPC cluster using a job scheduler.
 Each script loads the required software modules internally.
 Before running the pipeline, make sure that all required programs and module names are available in your cluster environment, or adapt the module loading commands to match your local module system.
+
+#### Programs that you need to download
+
+Some required tools are not available as cluster modules and must be installed manually before running the pipeline.
+
+- **Juicer Tools**  
+  Download from: https://github.com/aidenlab/juicer/releases  
+  A compatible version (e.g. `juicer_tools.1.9.9_jcuda.0.8.jar`) should be selected.  
+  The `.jar` file should be placed in the same directory where the pipeline will be executed.
+
+- **HiCUP**  
+  Download from: https://github.com/StevenWingett/HiCUP/releases/tag/v0.9.2  
+  The folder should be extracted and placed in the same working directory as the pipeline.
+
+Both tools must be accessible (correct paths or executable permissions) before starting the analysis.
 
 ## How to run the pipeline
 
