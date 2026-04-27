@@ -1,3 +1,3 @@
 # o put al README
 N=$(wc -l < samples.txt)
-sbatch --array=1-$N mi_script.sh
+sbatch --array=1-$N scripts/HiC_PIPELINE.sh
