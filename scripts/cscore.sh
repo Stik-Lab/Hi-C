@@ -31,7 +31,6 @@ else
         ${path_cscore}/${describer} \
         4 1000000
 
-
         for i in "${path_cscore}/${describer}"_cscore.bedgraph
         do
                 outfile=$(basename "$i" _cscore.bedgraph)
