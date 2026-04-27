@@ -62,7 +62,7 @@ echo " ................................................................ END cp $
 
 echo " ................................................................ START makeTagDirectory 2 ${describer} ................................................................ "
 
-if [ -f "${path_homer}/${describer}_filtered/tagInfo.txt" ] && [ "$(find "${path_homer}/${describer}_filtered" -name "*.bed" | wc -l)" -gt 0 ]; then
+if [ -f "${path_homer}/${describer}_filtered/tagInfo.txt" ]; then
     echo "SKIP makeTagDirectory 2 : Already updated and processed for ${describer}"
 else
 
