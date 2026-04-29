@@ -108,9 +108,18 @@ array_id=${SLURM_ARRAY_TASK_ID}
 # ========== 6. FINAL VALIDATION ==========
 if [ -s "${path_bam}/${describer}_R1.bam" ] && [ -s "${path_bam}/${describer}_R2.bam" ]; then
     echo "job successful"
-    sbatch --array=${array_id}-${array_id} scripts/tagdir.sh
     sbatch --array=${array_id}-${array_id} scripts/hicExplorer_analysis.sh
 
+   if [ "${compartments}" == "both" ]; then
+    sbatch --array=${array_id}-${array_id} scripts/tagdir.sh
+    sbatch --array=${array_id}-${array_id} scripts/juicer.sh
+
+   elif  [ "${compartments}" == "juicer" ]; then
+    sbatch --array=${array_id}-${array_id} scripts/juicer.sh
+
+   elif  [ "${compartments}" == "cscore" ]; then
+    sbatch --array=${array_id}-${array_id} scripts/tagdir.sh
+   fi
 
 else
     echo "job failed: BAM files are missing or empty for ${describer}"
