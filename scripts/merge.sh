@@ -126,8 +126,19 @@ COMPLETED=$(grep -l "merged successful" merge_${SLURM_ARRAY_JOB_ID}-*.log 2>/dev
 
 if [ "$COMPLETED" -eq "$Nmerge" ]; then
     echo "All ${Nmerge} merge jobs finished. Launching downstream analysis..."
-    sbatch --array=1-${Nmerge} scripts/tagdir_merge.sh
     sbatch --array=1-${Nmerge} scripts/hicExplorer_analysis_merge.sh
+
+   if [ "${compartments}" == "both" ]; then
+    sbatch --array=1-${Nmerge} scripts/tagdir_merge.sh
+    sbatch --array=1-${Nmerge} scripts/juicer_merge.sh
+
+   elif  [ "${compartments}" == "juicer" ]; then
+    sbatch --array=1-${Nmerge} scripts/juicer_merge.sh
+
+   elif  [ "${compartments}" == "cscore" ]; then
+    sbatch --array=1-${Nmerge} scripts/tagdir_merge.sh
+   fi
+
 else
     echo "Completed jobs so far: ${COMPLETED} / ${Nmerge}"
 fi
