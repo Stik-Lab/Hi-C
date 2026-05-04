@@ -69,8 +69,8 @@ if [ -s "${R1_TRUNC}" ] && [ -s "${R2_TRUNC}" ]; then
     echo "SKIP HiCUP truncation: truncated files already exist for ${describer}"
 else
     perl ${HICUP_trunc} --re1 ${restriction_enzyme} \
-        ${path_fq}/${describer}_*1_val_1.fq.gz \
-        ${path_fq}/${describer}_*2_val_2.fq.gz \
+        "${R1_TRIM}" \
+        "${R2_TRIM}" \
         --zip --outdir ${path_fq}
     R1_TRUNC=$(ls ${path_fq}/${describer}*val_1*.trunc.fastq.gz | head -n 1)
     R2_TRUNC=$(ls ${path_fq}/${describer}*val_2*.trunc.fastq.gz | head -n 1)
