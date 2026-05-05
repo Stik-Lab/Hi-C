@@ -91,10 +91,21 @@ echo "................................................................ END hic f
 array_id=${SLURM_ARRAY_TASK_ID}
 
 if [ -s "${path_homer}/${describer}_filtered/tagInfo.txt" ]; then
-    echo "job successful"
-    sbatch --array=${array_id}-${array_id} scripts/txtfile_merge.sh
-    echo "Number of completed jobs: $(grep 'job successful' tag_dir_merge_${SLURM_ARRAY_JOB_ID}-*.log | wc -l)"
+       if [ "${compartments}" == "both" ]; then
+    sbatch --array=${array_id}-${array_id} scripts/txtfile.sh
+    sbatch --array=${array_id}-${array_id} scripts/juicer.sh
+
+   elif  [ "${compartments}" == "juicer" ]; then
+    sbatch --array=${array_id}-${array_id} scripts/juicer.sh
+
+   elif  [ "${compartments}" == "cscore" ]; then
+    sbatch --array=${array_id}-${array_id} scripts/txtfile.sh
+
+   fi
+
 else
     echo "fail"
-    echo "Number of completed jobs: $(grep 'job successful' tag_dir_merge_${SLURM_ARRAY_JOB_ID}-*.log | wc -l)"
-fi
+  
+fi 
+
+echo "Number of completed jobs: $(grep 'job successful' tag_dir_${SLURM_ARRAY_JOB_ID}-*.log | wc -l)"
