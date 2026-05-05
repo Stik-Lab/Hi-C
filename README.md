@@ -104,6 +104,7 @@ danglingSequence='GATC'        # Dangling end sequence
 genome='hg38'                  # Genome assembly
 merge='yes/no'                 # Enable or disable replicate merging
 numRep=2                       # Number of replicates per biological sample
+compartments='cscore/juicer/both'   # Compartment calling program
 
 ```
 
