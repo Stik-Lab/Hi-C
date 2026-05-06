@@ -11,7 +11,7 @@ describer=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samplesmerge.txt)
 
 source ./config.sh
 
-for dir in "tmp" ; do
+for dir in "tmp" "${path_juicerEV}" ; do
   if [ ! -d "${dir}" ]; then
     mkdir -p "${dir}"
   fi
