@@ -43,10 +43,7 @@ if [ "$numRep" -eq 2 ]; then
     # ========== SUM MATRICES ==========
     echo "................................................................ START sumMatrix ${describer} ................................................................"
 
-    hic1=$(ls ${path_hicMatrix}/${describer}*1_5kb.h5 2>/dev/null | head -n 1)
-    hic2=$(ls ${path_hicMatrix}/${describer}*2_5kb.h5 2>/dev/null | head -n 1)
-
-    if [ ! -s "$hic1" ] || [ ! -s "$hic2" ]; then
+    if [ ! -s ${path_hicMatrix}/${describer}*1_5kb.h5 ] || [ ! -s ${path_hicMatrix}/${describer}*2_5kb.h5 ]; then
         echo "ERROR: HiC matrix files missing for ${describer}. Cannot sum matrices. Aborting."
         exit 1
     fi
@@ -127,18 +124,7 @@ COMPLETED=$(grep -l "merged successful" merge_${SLURM_ARRAY_JOB_ID}-*.log 2>/dev
 if [ "$COMPLETED" -eq "$Nmerge" ]; then
     echo "All ${Nmerge} merge jobs finished. Launching downstream analysis..."
     sbatch --array=1-${Nmerge} scripts/hicExplorer_analysis_merge.sh
-
-   if [ "${compartments}" == "both" ]; then
     sbatch --array=1-${Nmerge} scripts/tagdir_merge.sh
-    sbatch --array=1-${Nmerge} scripts/juicer_merge.sh
-
-   elif  [ "${compartments}" == "juicer" ]; then
-    sbatch --array=1-${Nmerge} scripts/juicer_merge.sh
-
-   elif  [ "${compartments}" == "cscore" ]; then
-    sbatch --array=1-${Nmerge} scripts/tagdir_merge.sh
-   fi
-
 else
     echo "Completed jobs so far: ${COMPLETED} / ${Nmerge}"
 fi
