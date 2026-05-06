@@ -28,7 +28,7 @@ do
 
 echo "................................................................ START EV1 ${describer} chr ${chr} ................................................................"
 
-java -jar -Xmx20g juicer_tools.1.9.9_jcuda.0.8.jar -p eigenvector KR ${path_homer}/${describer}_filtered/${describer}.hic chr${chr} BP 100000 tmp/juicerEV12_${describer}_chr${chr}.bedgraph
+java -jar -Xmx20g juicer_tools.1.9.9_jcuda.0.8.jar -p eigenvector KR ${path_homer}/${describer}_filtered/${describer}_filtered.hic chr${chr} BP 100000 tmp/juicerEV12_${describer}_chr${chr}.bedgraph
 
 echo "................................................................ END EV1 ${describer} chr ${chr} ................................................................"
 
