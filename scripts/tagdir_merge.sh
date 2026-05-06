@@ -108,4 +108,4 @@ else
   
 fi 
 
-echo "Number of completed jobs: $(grep 'job successful' tag_dir_${SLURM_ARRAY_JOB_ID}-*.log | wc -l)"
+
