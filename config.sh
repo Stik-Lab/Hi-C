@@ -7,6 +7,7 @@ path_homer='path_homer'
 path_coolMatrix='path_coolMatrix'
 path_loops='path_loops'
 path_cooltools='path_cooltools'
+path_TADs='path_TADs'
 path_cscore='path_cscore'
 path_juicerEV='path_juicerEV'
 
