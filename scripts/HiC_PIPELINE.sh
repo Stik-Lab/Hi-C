@@ -124,6 +124,6 @@ if [ "$COMPLETED" -eq "$N" ]; then
     echo "All jobs finished successfully. Launching downstream analysis..."
 
     if [ "${merge}" == "yes" ]; then
-        sbatch --array=1-${Nmerge} scripts/merge.sh
+        sbatch --array=1-${Nmerge} scripts/merge_bam.sh
     fi
 fi
