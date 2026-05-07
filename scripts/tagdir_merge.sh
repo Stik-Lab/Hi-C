@@ -92,14 +92,14 @@ array_id=${SLURM_ARRAY_TASK_ID}
 
 if [ -s "${path_homer}/${describer}_filtered/tagInfo.txt" ]; then
        if [ "${compartments}" == "both" ]; then
-    sbatch --array=${array_id}-${array_id} scripts/txtfile.sh
-    sbatch --array=${array_id}-${array_id} scripts/juicer.sh
+    sbatch --array=${array_id}-${array_id} scripts/txtfile_merge.sh
+    sbatch --array=${array_id}-${array_id} scripts/juicer_merge.sh
 
    elif  [ "${compartments}" == "juicer" ]; then
-    sbatch --array=${array_id}-${array_id} scripts/juicer.sh
+    sbatch --array=${array_id}-${array_id} scripts/juicer_merge.sh
 
    elif  [ "${compartments}" == "cscore" ]; then
-    sbatch --array=${array_id}-${array_id} scripts/txtfile.sh
+    sbatch --array=${array_id}-${array_id} scripts/txtfile_merge.sh
 
    fi
 
