@@ -46,9 +46,7 @@ paste ${genome100kb} tmp/juicerEV12_${describer}_ALL.bedgraph \
 | awk -v OFS='\t' '{if($1!="chrY"){print $1,$2,$3,$4}}' \
 > ${path_juicerEV}/juicerEV12_${describer}_tp.bedgraph
 
-rm -r tmp
-
-echo "................................................................ START ${describer} final output ................................................................"
+echo "................................................................ END ${describer} final output ................................................................"
 
 
 fi
