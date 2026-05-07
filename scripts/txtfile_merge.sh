@@ -27,13 +27,9 @@ echo " ................................................................ END .txt
 
 array_id=${SLURM_ARRAY_TASK_ID}
 
-if grep -q "END .txt merge file" "homertxt_${array_id}_merge.txt"; then
+if [ $? -eq 0 ]; then
     echo "job successful"
     sbatch --array=${array_id}-"${array_id}" scripts/cscore_merge.sh
-    COUNT=$(grep -c "job successful" homertxt_*_merge.txt)
-    echo "Number of completed jobs: $COUNT"
 else
     echo "fail"
-    COUNT=$(grep -c "job successful" homertxt_*_merge.txt)
-    echo "Number of completed jobs: $COUNT"
 fi
