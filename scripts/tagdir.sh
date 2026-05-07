@@ -62,14 +62,15 @@ echo " ................................................................ END cp $
 
 echo " ................................................................ START makeTagDirectory 2 ${describer} ................................................................ "
 
-if [ -f "${path_homer}/${describer}_filtered/tagInfo.txt" ]; then
+if [ -f "${path_homer}/${describer}_filtered/.updated" ]; then
     echo "SKIP makeTagDirectory 2 : Already updated and processed for ${describer}"
 else
 
         makeTagDirectory ${path_homer}/${describer}_filtered -update \
                 -genome ${genome} -removePEbg \
                 -restrictionSite ${restrictionSequence} -both \
-                -removeSelfLigation -removeSpikes 10000 5
+                -removeSelfLigation -removeSpikes 10000 5 \
+          && touch "${path_homer}/${describer}_filtered/.updated"
 
 fi
 
