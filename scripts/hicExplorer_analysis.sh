@@ -249,3 +249,14 @@ else
 fi
 
 echo "................................................................ END hicFindTADs ${describer} ................................................................"
+
+
+COMPLETED=$(grep "job successful" hicMatrix_${SLURM_ARRAY_JOB_ID}-*.log | wc -l)
+
+if [ "$COMPLETED" -eq "$N" ]; then
+    echo "All jobs finished successfully. Launching downstream analysis..."
+
+    if [ "${merge}" == "yes" ]; then
+        sbatch --array=1-${Nmerge} scripts/merge_hic.sh
+    fi
+fi
