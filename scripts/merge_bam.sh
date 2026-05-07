@@ -3,7 +3,7 @@
 #SBATCH --mem=150gb
 #SBATCH --time=30:00:00
 #SBATCH --cpus-per-task=8
-#SBATCH --output=merge_%A-%a.log
+#SBATCH --output=merge_bam_%A-%a.log
 
 # ========== VARIABLES ==========
 describer=$(sed -n "${SLURM_ARRAY_TASK_ID}p" samplesmerge.txt)
@@ -78,11 +78,10 @@ fi
 echo "merged successful"
 
 # ========== LAUNCH ANALYSIS SCRIPTS ==========
-COMPLETED=$(grep -l "merged successful" merge_${SLURM_ARRAY_JOB_ID}-*.log 2>/dev/null | wc -l)
+COMPLETED=$(grep -l "merged successful" merge_bam_${SLURM_ARRAY_JOB_ID}-*.log 2>/dev/null | wc -l)
 
 if [ "$COMPLETED" -eq "$Nmerge" ]; then
     echo "All ${Nmerge} merge jobs finished. Launching downstream analysis..."
-    sbatch --array=1-${Nmerge} scripts/hicExplorer_analysis_merge.sh
     sbatch --array=1-${Nmerge} scripts/tagdir_merge.sh
 else
     echo "Completed jobs so far: ${COMPLETED} / ${Nmerge}"
