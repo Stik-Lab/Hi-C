@@ -250,6 +250,11 @@ fi
 
 echo "................................................................ END hicFindTADs ${describer} ................................................................"
 
+if [ -s "${path_hicMatrix}/${describer}_5kb_KR.h5" ]; then
+    echo "job successful"   
+else
+    echo "job failed: hic files are missing or empty for ${describer}"
+fi
 
 COMPLETED=$(grep "job successful" hicMatrix_${SLURM_ARRAY_JOB_ID}-*.log | wc -l)
 
