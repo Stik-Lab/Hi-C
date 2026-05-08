@@ -262,10 +262,9 @@ fi
 
 COMPLETED=$(grep "job successful" hicMatrix_${SLURM_ARRAY_JOB_ID}-*.log | wc -l)
 
-if [ "$COMPLETED" -eq "$N" ]; then
-    echo "All jobs finished successfully. Launching downstream analysis..."
-
-    if [ "${merge}" == "yes" ]; then
-        sbatch --array=1-${Nmerge} scripts/merge_hic.sh
-    fi
+if [ "${SLURM_ARRAY_TASK_ID}" -eq 1 ] && [ "${merge}" == "yes" ]; then
+    echo "Task 1: Submitting merge job with dependency on full array completion..."
+    sbatch --dependency=afterok:${SLURM_ARRAY_JOB_ID} \
+           --array=1-${Nmerge} \
+           scripts/merge_hic.sh
 fi
