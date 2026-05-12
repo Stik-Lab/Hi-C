@@ -19,7 +19,7 @@ if [ "$numRep" -eq 2 ]; then
     # ========== SUM MATRICES ==========
     echo "................................................................ START sumMatrix ${describer} ................................................................"
 
-    if [ ! -s ${path_hicMatrix}/${describer}*1_5kb.h5 ] || [ ! -s ${path_hicMatrix}/${describer}*2_5kb.h5 ]; then
+    if [ ! -s "${path_hicMatrix}/${describer}*1_5kb.h5" ] || [ ! -s "${path_hicMatrix}/${describer}*2_5kb.h5" ]; then
         echo "ERROR: HiC matrix files missing for ${describer}. Cannot sum matrices. Aborting."
         exit 1
     fi
