@@ -8,17 +8,17 @@ This repository contains a complete Hi-C data processing pipeline for generating
     <li>
       <a href="#before-starting">Before Starting</a>
       <ul>
-        <li><a href="#prepare-the-samplestxt-file">Prepare the samples.txt file</a></li>
+        <li><a href="#prepare-the-sample-files">Prepare the sample files</a></li>
         <li><a href="#edit-the-configsh-file">Edit the config.sh file</a></li>
+        <li><a href="#hpc-environment">HPC Environment</a></li>
       </ul>
     </li>
-    <li>
-      <a href="#how-to-run-the-pipeline">How to Run the Pipeline</a>
-    </li>
+    <li><a href="#how-to-run-the-pipeline">How to Run the Pipeline</a></li>
     <li>
       <a href="#step-by-step-description">Step-by-Step Description</a>
       <ul>
-        <li><a href="#1-quality-control-and-trimming">1. Quality Control and Trimming</a>
+        <li>
+          <a href="#1-quality-control-and-trimming">1. Quality Control and Trimming</a>
           <ul>
             <li><a href="#fastqc">FastQC</a></li>
             <li><a href="#trim-galore">Trim Galore</a></li>
@@ -26,11 +26,12 @@ This repository contains a complete Hi-C data processing pipeline for generating
             <li><a href="#bowtie2-alignment">Bowtie2 Alignment</a></li>
           </ul>
         </li>
-        <li><a href="#2-generate-txt-hi-c-files-txtfilesh">2. Generate .txt Hi-C files (txtfile.sh)</a></li>
-        <li><a href="#3-cscore-analysis-cscoresh">3. Cscore Analysis (cscore.sh)</a></li>
+        <li><a href="#2-create-homer-tag-directories-and-generate-hi-c-files-tagdirsh">2. Create HOMER Tag Directories and Generate Hi-C Files (tagdir.sh)</a></li>
+        <li><a href="#3-compartment-analysis-cscoresh--juicersh">3. Compartment Analysis (cscore.sh / juicer.sh)</a></li>
         <li><a href="#4-hi-c-matrix-generation-and-analysis-hicexplorersh">4. Hi-C Matrix Generation and Analysis (hicexplorer.sh)</a></li>
       </ul>
     </li>
+    <li><a href="#outputs">Outputs</a></li>
   </ol>
 </details>
 
@@ -197,7 +198,7 @@ bowtie2 --local -x indexgenome --threads 8 \
     -U sample1_R1_val_*.trunc.* --reorder -S sample1_R1.sam
 ```
 
-### 2. Create HOMER Tag Directories and Generate Hi-C Files (tagdir.sh) (txtfile.sh)
+### 2. Create HOMER Tag Directories and Generate Hi-C Files (tagdir.sh & txtfile.sh)
 - This step converts aligned Hi-C reads (SAM files) into **HOMER tag directories**.
   - Tag directories are HOMER’s internal data format that store mapped read positions in a structured way, making them ready for Hi-C specific processing and analysis.
 - From the tag directories, this step produces **Hi-C interaction text files**.
@@ -249,7 +250,7 @@ tagDir2hicFile.pl sample1_filtered \
 - A ```.hic``` file for each sample.
 -  Hi-C interaction text files.
 
-### 4. Compartment Analysis (cscore.sh/juicer.sh)
+### 3. Compartment Analysis (cscore.sh/juicer.sh)
  
 - This step calculates compartment scores from Hi-C data. Computing A/B compartments is a technically challenging step where results can vary depending on the method used. For this reason, the pipeline offers two approaches — **CscoreTool** and **Juicer eigenvector** — which can be run independently or together by setting the ``compartments`` parameter in ``config.sh`` (``cscore``, ``juicer``, or ``both``).
 - C-scores quantify large-scale chromatin organization by identifying A/B compartments, which are associated with transcriptional activity (A) or inactivity (B). The script takes as input Hi-C interaction text files (produced from HOMER tag directories) and outputs compartment score values along the genome.
