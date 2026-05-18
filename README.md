@@ -298,7 +298,7 @@ This file contains four columns: ``chr``, ``start``, ``end``, ``eigenvector valu
 > [!Note]
 > The Juicer eigenvector and CscoreTool outputs may have opposite signs for A/B compartments depending on the chromosome. Always validate the sign assignment by correlating with an external reference before interpreting the results.
 
-### 5. Hi-C matrix generation and analysis (hicExplorer_analysis.sh)
+### 4. Hi-C matrix generation and analysis (hicExplorer_analysis.sh)
 
 This step handles the full downstream processing of Hi-C data: from building raw contact matrices to loop calling, compartment analysis, and TAD detection. It is designed to be robust, with skip checks at every step to allow safe re-runs if a job is interrupted.
 
