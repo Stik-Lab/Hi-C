@@ -297,16 +297,94 @@ This file contains four columns: ``chr``, ``start``, ``end``, ``eigenvector valu
 > [!Note]
 > The Juicer eigenvector and CscoreTool outputs may have opposite signs for A/B compartments depending on the chromosome. Always validate the sign assignment by correlating with an external reference before interpreting the results.
 
-### 5. Hi-C matrix generation and analysis (hicexplorer.sh)
-- Finds restriction sites in the reference genome.
-- Builds raw contact matrices at 5 kb resolution.
-- Merges to 10 kb, 20 kb, 50 kb, and 100 kb matrices.
-- Applies KR normalization and converts to .cool format.
-- Calls loops at multiple resolutions with mustache.
-- Computes expected contacts, eigenvectors, and compartment scores with cooltools.
-- Generates saddle plots.
-- Call TADs at 20kb resolution.
+### 5. Hi-C matrix generation and analysis (hicExplorer_analysis.sh)
 
+This step handles the full downstream processing of Hi-C data: from building raw contact matrices to loop calling, compartment analysis, and TAD detection. It is designed to be robust, with skip checks at every step to allow safe re-runs if a job is interrupted.
+
+#### Restriction Site Detection
+Identifies restriction enzyme cut sites in the reference genome. The output BED file is shared across all samples and only needs to be generated once.
+
+```bash
+hicFindRestSite --fasta ${refgenome} \
+    --searchPattern ${restrictionSequence} \
+    -o ${restsite_folder}/rest_site_positions.bed
+```
+
+#### Contact Matrix Construction
+Builds raw contact matrices at 5 kb resolution from the paired BAM files.
+
+```bash
+hicBuildMatrix --samFiles R1.bam R2.bam \
+    --binSize 5000 \
+    --restrictionSequence ${restrictionSequence} \
+    --danglingSequence ${danglingSequence} \
+    --restrictionCutFile rest_site_positions.bed \
+    --outFileName ${describer}_5kb.h5 \
+    --QCfolder ${describer}_5kb_QC --threads 8
+```
+
+The ``--QCfolder`` output contains quality metrics that should be inspected before proceeding.
+
+#### Multi-Resolution Matrix Generation 
+
+- Merges to 10 kb, 20 kb, 50 kb, and 100 kb matrices.
+
+#### KR Normalization and Format Conversion
+
+All matrices (5, 10, 20, 50, 100 kb) are normalized using KR (Knight-Ruiz) balancing, applied per chromosome (``--perchr``). Normalized matrices are then converted from ``.h5`` to ``.cool`` format for compatibility with cooltools and downstream visualization.
+
+####  Loop Calling (mustache)
+
+Chromatin loops are called at 5, 10, and 20 kb resolution using mustache, at two p-value thresholds to allow flexible downstream filtering:
+
+```bash
+python -m mustache -f ${describer}_${res}kb_KR.cool \
+    -r ${res}kb -pt 0.1  -o loops_01_${res}kb.tsv
+
+python -m mustache -f ${describer}_${res}kb_KR.cool \
+    -r ${res}kb -pt 0.05 -o loops_05_${res}kb.tsv  
+```  
+
+#### Cooltools analysis  
+
+Here we use cooltools to obtaing the saddle plots, and visualize the compartment strenght, this is performed in three steps:
+
+**1. Expected contacts** — Calculate expected Hi-C signal for cis regions of chromosomal interaction map
+
+```bash
+cooltools expected-cis -p 8 -o ${describer}_exp.tsv ${describer}_100kb_KR.cool
+```
+**2.Eigenvector decomposition** — Perform eigen value decomposition on a cooler matrix to calculate compartment signal by finding the eigenvector that correlates best with the phasing track.
+
+```bash
+cooltools eigs-cis --phasing-track ${ref_compartments} \
+    -o ${describer}_100kb_KR_ev_ac ${describer}_100kb_KR.cool
+```
+EV1, EV2, and EV3 are each exported as individual bedgraph files for downstream use.
+
+**3.Saddle Plot** — Calculate saddle statistics and generate saddle plots for an arbitrary signal track on the genomic bins of a contact matrix.
+
+```bash
+cooltools saddle --qrange 0.02 0.98 --strength \
+    --vmin 0.2 --vmax 4 --fig pdf \
+    ${describer}_100kb_KR.cool \
+    ${describer}_ev_ac.cis.vecs.tsv \
+    ${describer}_exp.tsv
+```
+
+> [!IMPORTANT]
+> This script generates saddle plots using the cooltools eigenvectors computed in the previous step. However, saddle plots can also be generated using the compartment scores from the other two methods available in this pipeline.
+
+#### TAD Calling
+
+TADs are called at 20 kb resolution.
+
+```bash
+hicFindTADs -m ${describer}_20kb_KR.h5 \
+    --minDepth 100000 --maxDepth 200000 --step 20000 \
+    --thresholdComparisons 0.01 --delta 0.01 \
+    --correctForMultipleTesting fdr -p 8
+```
 
 
 ## Outputs
