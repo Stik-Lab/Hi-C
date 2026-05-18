@@ -130,7 +130,7 @@ Some required tools are not available as cluster modules and must be installed m
 Both tools must be accessible (correct paths or executable permissions) before starting the analysis.
 
 - **mustache**  
-  Download from:[https://github.com/StevenWingett/HiCUP/releases/tag/v0.9.2  ](https://github.com/ay-lab/mustache)
+  Download from: https://github.com/ay-lab/mustache
   Load the necessary modules and prepare the ```mustache``` environment using the following commands:
   
 ```bash
