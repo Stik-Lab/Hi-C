@@ -27,7 +27,7 @@ This repository contains a complete Hi-C data processing pipeline for generating
           </ul>
         </li>
         <li><a href="#2-create-homer-tag-directories-and-generate-hi-c-files-tagdirsh--txtfilesh">2. Create HOMER Tag Directories and Generate Hi-C Files (tagdir.sh & txtfile.sh)</a></li>
-        <li><a href="#3-compartment-analysis-cscoresh--juicersh">3. Compartment Analysis (cscore.sh / juicer.sh)</a></li>
+        <li><a href="#3-compartment-analysis-cscoresh--juicersh">3. Compartment Analysis (cscore.sh & juicer.sh)</a></li>
         <li><a href="#4-hi-c-matrix-generation-and-analysis-hicexplorer_analysissh">4. Hi-C Matrix Generation and Analysis (hicExplorer_analysis.sh)</a></li>
       </ul>
     </li>
@@ -250,8 +250,8 @@ tagDir2hicFile.pl sample1_filtered \
 - A ```.hic``` file for each sample.
 -  Hi-C interaction text files.
 
-### 3. Compartment Analysis (cscore.sh/juicer.sh)
- 
+### 3. Compartment Analysis (cscore.sh & juicer.sh)
+  
 - This step calculates compartment scores from Hi-C data. Computing A/B compartments is a technically challenging step where results can vary depending on the method used. For this reason, the pipeline offers two approaches — **CscoreTool** and **Juicer eigenvector** — which can be run independently or together by setting the ``compartments`` parameter in ``config.sh`` (``cscore``, ``juicer``, or ``both``).
 - C-scores quantify large-scale chromatin organization by identifying A/B compartments, which are associated with transcriptional activity (A) or inactivity (B). The script takes as input Hi-C interaction text files (produced from HOMER tag directories) and outputs compartment score values along the genome.
 
