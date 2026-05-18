@@ -197,13 +197,13 @@ bowtie2 --local -x indexgenome --threads 8 \
     -U sample1_R1_val_*.trunc.* --reorder -S sample1_R1.sam
 ```
 
-### 2. Create HOMER Tag Directories and Generate Hi-C Files (tagdir.sh)
+### 2. Create HOMER Tag Directories and Generate Hi-C Files (tagdir.sh) (txtfile.sh)
 - This step converts aligned Hi-C reads (SAM files) into **HOMER tag directories**.
   - Tag directories are HOMER’s internal data format that store mapped read positions in a structured way, making them ready for Hi-C specific processing and analysis.
-- From the tag directories, this step produces Hi-C interaction text files.
+- From the tag directories, this step produces **Hi-C interaction text files**.
 - These .txt files summarize contact frequencies between genomic loci and serve as the input for Cscore analysis.
 
-*This analysis is divided un different steps:*
+*This analysis is divided in different steps:*
 
 #### 1. Create unfiltered tag directories from paired SAM files.
 
@@ -249,23 +249,53 @@ tagDir2hicFile.pl sample1_filtered \
 - A ```.hic``` file for each sample.
 -  Hi-C interaction text files.
 
-### 4. Cscore analysis (cscore.sh)
-- This step calculates compartment scores (C-scores) from Hi-C data. C-scores quantify large-scale chromatin organization by identifying A/B compartments, which are associated with transcriptional activity (A) or inactivity (B). The script takes as input Hi-C interaction text files (produced from HOMER tag directories) and outputs compartment score values along the genome.
+### 4. Compartment Analysis (cscore.sh/juicer.sh)
+ 
+- This step calculates compartment scores from Hi-C data. Computing A/B compartments is a technically challenging step where results can vary depending on the method used. For this reason, the pipeline offers two approaches — **CscoreTool** and **Juicer eigenvector** — which can be run independently or together by setting the ``compartments`` parameter in ``config.sh`` (``cscore``, ``juicer``, or ``both``).
+- C-scores quantify large-scale chromatin organization by identifying A/B compartments, which are associated with transcriptional activity (A) or inactivity (B). The script takes as input Hi-C interaction text files (produced from HOMER tag directories) and outputs compartment score values along the genome.
+
+
+#### Option 1- CscoreTool
+
+Takes as input Hi-C interaction text files produced from HOMER tag directories and outputs compartment score values along the genome.
 
 ```bash
 CscoreTool1.1 ${genome100kb} \
     homertxt_${array_id}.txt \
     sample1 \
-    4 1000000
+    4 100000
 ```
 
 - ```${genome100kb}``` → Genome binning file at 100 kb resolution
 - ```homertxt_${array_id}.txt``` → Hi-C interaction text file generated from the previous step
 - ```sample1``` → Output prefix and directory for results
 - ```4``` → Number of processing threads
-- ```1000000``` → Window size (1 Mb) for calculating correlation patterns
+- ```100000``` → Window size (100kb) for calculating correlation patterns
 
+#### Option 2 - Juicer Egienvector
 
+Takes as input the ``.hic`` file generated from the HOMER tag directory step and computes the first eigenvector (PC1) at 100 kb resolution using KR normalization. The sign of the eigenvector corresponds to A/B compartment identity.
+
+```bash
+java -jar -Xmx20g juicer_tools.1.9.9_jcuda.0.8.jar eigenvector \
+    KR \
+    ${path_homer}/${describer}_filtered/${describer}_filtered.hic \
+    chr${chr} \
+    BP 100000 \
+    tmp/juicerEV12_${describer}_chr${chr}.bedgraph
+```
+- ```eigenvector``` → Computes the first principal component (PC1) of the KR-normalized Pearson correlation matrix
+- ```KR``` → KR (Knight-Ruiz) normalization, recommended for compartment analysis
+- ```${describer}_filtered.hic``` → Input .hic file from the HOMER tag directory step
+- ```chr${chr}``` → Chromosome to analyze (run in a loop over all chromosomes)
+- ```BP 100000``` → Base-pair resolution, set to 100 kb
+- ```tmp/juicerEV12_${describer}_chr${chr}.bedgraph``` → Output eigenvector file per chromosome
+
+The eigenvector is computed per chromosome and stored as temporary files in ``tmp/``. These are then concatenated and merged with genome coordinates into a single genome-wide bedgraph file as the final output: ``juicerEV12_${describer}_tp.bedgraph``
+This file contains four columns: ``chr``, ``start``, ``end``, ``eigenvector value``, at **100** kb resolution across all chromosomes and chrX. ChrY is excluded from the final output. The per-chromosome temporary files in tmp/ are intermediate and not needed after the pipeline completes.
+
+> [!Note]
+> The Juicer eigenvector and CscoreTool outputs may have opposite signs for A/B compartments depending on the chromosome. Always validate the sign assignment by correlating with an external reference before interpreting the results.
 
 ### 5. Hi-C matrix generation and analysis (hicexplorer.sh)
 - Finds restriction sites in the reference genome.
@@ -276,7 +306,9 @@ CscoreTool1.1 ${genome100kb} \
 - Computes expected contacts, eigenvectors, and compartment scores with cooltools.
 - Generates saddle plots.
 - Call TADs at 20kb resolution.
-  
+
+
+
 ## Outputs
 
 Once you run the pipeline, the following files and folders are generated:
@@ -287,7 +319,8 @@ Once you run the pipeline, the following files and folders are generated:
 | `bamfiles/` | `.bam` | Cleaned read alignments. |
 | `coolMatrix/` | `.cool` | Contact matrices optimized for HiGlass/Juicebox. |
 | `cooltools/` | `.pdf`, `.npz`, `.tsv` | A/B compartment eigenvectors and saddle plot metrics. |
-| `cscore/` | `.bedgraph`, `.txt` | Quantified genomic compartment status. |
+| `cscore/` | `.bedgraph`, `.txt` | Quantified genomic compartment status computed using c-score Tool. |
+| `juicer/` | `.bedgraph` | Quantified genomic compartment status computed using JuicerTools. |
 | `hicMatrix/` | `.h5`, `.html` | Processed interaction matrices and QC summaries. |
 | `homer/` | `.tags.tsv` | Tag directories for HOMER compatibility. |
 | `loops/` | `.bedpe` | Detected chromatin loop interactions. |
