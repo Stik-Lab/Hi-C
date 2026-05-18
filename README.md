@@ -26,9 +26,9 @@ This repository contains a complete Hi-C data processing pipeline for generating
             <li><a href="#bowtie2-alignment">Bowtie2 Alignment</a></li>
           </ul>
         </li>
-        <li><a href="#2-create-homer-tag-directories-and-generate-hi-c-files-tagdirsh">2. Create HOMER Tag Directories and Generate Hi-C Files (tagdir.sh)</a></li>
+        <li><a href="#2-create-homer-tag-directories-and-generate-hi-c-files-tagdirsh-&-txtfilesh">2. Create HOMER Tag Directories and Generate Hi-C Files (tagdir.sh & txtfile.sh)</a></li>
         <li><a href="#3-compartment-analysis-cscoresh--juicersh">3. Compartment Analysis (cscore.sh / juicer.sh)</a></li>
-        <li><a href="#4-hi-c-matrix-generation-and-analysis-hicexplorersh">4. Hi-C Matrix Generation and Analysis (hicexplorer.sh)</a></li>
+        <li><a href="#4-hi-c-matrix-generation-and-analysis-hicexplorer_analysissh">4. Hi-C Matrix Generation and Analysis (hicExplorer_analysis.sh)</a></li>
       </ul>
     </li>
     <li><a href="#outputs">Outputs</a></li>
