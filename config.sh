@@ -12,19 +12,19 @@ path_cscore='path_cscore'
 path_juicerEV='path_juicerEV'
 
 # Files and programs 
-HICUP_trunc='hiCUP/HiCUP-0.9.2/hicup_truncater'   # requirements
-indexgenome='/mnt/beegfs/public/references/index/bowtie2/GRCh38_noalt_as/GRCh38_noalt_as'   # requirements
-refgenome='/mnt/beegfs/public/references/genome/human/GRCh38.primary_assembly.genome.fa' 
-ref_compartments='ref/refcool_MRC5_ATAC_100kb.bed'  # requirements
-genome100kb='/mnt/beegfs/eferre/bin/files/hg38/hg38_100kb.bed'
+HICUP_trunc='hiCUP/HiCUP-0.9.2/hicup_truncater'      # Script used to truncate Hi-C reads at restriction sites. (required)
+indexgenome='bowtie2/GRCh38_noalt_as/GRCh38_noalt_as'      # Bowtie2 genome index
+refgenome='GRCh38.primary_assembly.genome.fa'      # Reference genome FASTA file
+ref_compartments='files/refcool_MRC5_ATAC_100kb.bed'      # BED file with reference A/B compartments.
+genome100kb='files/hg38_100kb.bed'     # Genome bins at 100 kb resolution (BED)
 
 # Parameters
-N=$(wc -l < samples.txt)
-Nmerge=$(wc -l < samplesmerge.txt)
-restriction_enzyme='^GATC,MboI'
-restrictionSequence='GATC'
-danglingSequence='GATC'
-genome='hg38'
-merge='yes/no'                 # Enable or disable replicate merging
-numRep=2/3
-compartments='cscore/juicer/both'
+N=$(wc -l < samples.txt)      # Number of replicate entries (one line per replicate)
+Nmerge=$(wc -l < samplesmerge.txt)      # Number of biological samples (used for merging)
+restriction_enzyme='^GATC,MboI'      # Restriction enzyme used in Hi-C (HiCUP format)
+restrictionSequence='GATC'      # Restriction site sequence
+danglingSequence='GATC'      # Dangling end sequence
+genome='hg38'      # Genome assembly
+merge='yes/no'       # Enable or disable replicate merging
+numRep=2/3      # Number of replicates per biological sample
+compartments='cscore/juicer/both'       # Compartment calling program
