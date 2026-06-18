@@ -60,6 +60,9 @@ fi
 
 echo "................................................................ END hicBuildMatrix 5kb ${describer} ................................................................"
 
+if [ ${short} == "yes" ]; then
+  exit 1
+fi
 
 # ========== GENERATE DIFFERENT RESOLUTION MATRICES ==========
 
