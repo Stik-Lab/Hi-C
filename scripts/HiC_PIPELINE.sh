@@ -118,10 +118,10 @@ fi
 
 # ========== 7. LAUNCH DOWNSTREAM ANALYSIS ==========
 
-COMPLETED=$(grep "job successful" HICpipeline_${SLURM_ARRAY_JOB_ID}-*.log | wc -l)
+COMPLETED=$(grep -l "job successful" HICpipeline_${SLURM_ARRAY_JOB_ID}-*.log | wc -l)
 
-if [ "${SLURM_ARRAY_TASK_ID}" -eq 1 ] && [ "${merge}" == "yes" ]; then
-    echo "Task 1: Submitting merge job with dependency on full array completion..."
+if [ "${COMPLETED}" -eq "${N}" ] && [ "${merge}" == "yes" ]; then
+    echo "All ${N} tasks successful: Submitting merge job..."
     sbatch --dependency=afterok:${SLURM_ARRAY_JOB_ID} \
            --array=1-${Nmerge} \
            scripts/merge_bam.sh
