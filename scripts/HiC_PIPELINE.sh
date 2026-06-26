@@ -117,12 +117,16 @@ else
 fi
 
 # ========== 7. LAUNCH DOWNSTREAM ANALYSIS ==========
+if [ -s "${path_bam}/${describer}_R1.bam" ] && [ -s "${path_bam}/${describer}_R2.bam" ]; then
+    echo "${describer}" >> HICpipeline_done.txt
+fi
 
-COMPLETED=$(grep -l "job successful" HICpipeline_${SLURM_ARRAY_JOB_ID}-*.log | wc -l)
-
-if [ "${COMPLETED}" -eq "${N}" ] && [ "${merge}" == "yes" ]; then
-    echo "All ${N} tasks successful: Submitting merge job..."
-    sbatch --dependency=afterok:${SLURM_ARRAY_JOB_ID} \
-           --array=1-${Nmerge} \
-           scripts/merge_bam.sh
+if [ "${merge}" == "yes" ]; then
+    COMPLETED=$(wc -l < HICpipeline_done.txt)
+    if [ "${COMPLETED}" -eq "${N}" ]; then
+        echo "All ${N} tasks successful: Submitting merge job..."
+        sbatch --array=1-${Nmerge} scripts/merge_bam.sh
+    else
+        echo "Completed so far: ${COMPLETED} / ${N}"
+    fi
 fi
