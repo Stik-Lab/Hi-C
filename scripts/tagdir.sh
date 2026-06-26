@@ -2,7 +2,7 @@
 
 #SBATCH --job-name=homer
 #SBATCH --mem=60gb
-#SBATCH --time=24:00:00
+#SBATCH --time=48:00:00
 #SBATCH --cpus-per-task=8
 #SBATCH --output=tag_dir_%A-%a.log
 
