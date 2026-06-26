@@ -254,20 +254,20 @@ fi
 echo "................................................................ END hicFindTADs ${describer} ................................................................"
 
 # ========== FINAL VALIDATION ==========
-
 if [ -s "${path_hicMatrix}/${describer}_5kb_KR.h5" ]; then
-    echo "job successful"   
+    echo "job successful"
+    echo "${describer}" >> hicMatrix_done.txt
 else
     echo "job failed: hic files are missing or empty for ${describer}"
 fi
 
-# ========== LAUNCH DOWNSTREAM ANALYSIS ==========
-
-COMPLETED=$(grep "job successful" hicMatrix_${SLURM_ARRAY_JOB_ID}-*.log | wc -l)
-
-if [ "${SLURM_ARRAY_TASK_ID}" -eq 1 ] && [ "${merge}" == "yes" ]; then
-    echo "Task 1: Submitting merge job with dependency on full array completion..."
-    sbatch --dependency=afterok:${SLURM_ARRAY_JOB_ID} \
-           --array=1-${Nmerge} \
-           scripts/merge_hic.sh
+# ========== LAUNCH MERGE ==========
+if [ "${merge}" == "yes" ]; then
+    COMPLETED=$(wc -l < hicMatrix_done.txt)
+    if [ "${COMPLETED}" -eq "${N}" ]; then
+        echo "All ${N} hicMatrix jobs successful. Submitting merge..."
+        sbatch --array=1-${Nmerge} scripts/merge_hic.sh
+    else
+        echo "Completed so far: ${COMPLETED} / ${N}"
+    fi
 fi
