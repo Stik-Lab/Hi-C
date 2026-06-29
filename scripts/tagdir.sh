@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #SBATCH --job-name=homer
-#SBATCH --mem=80gb
+#SBATCH --mem=100gb
 #SBATCH --time=48:00:00
 #SBATCH --cpus-per-task=8
 #SBATCH --output=tag_dir_%A-%a.log
